@@ -12,13 +12,13 @@ set -ouex pipefail
 # this installs a package from fedora repos
 dnf5 install -y ripgrep fd-find tldr eza bat zoxide git-delta
 
-echo "=== Downloading and installing starship ==="
-curl -sSfL -o "$TMP_INSTALLERS/starship_install.sh" https://starship.rs/install.sh
-sh "$TMP_INSTALLERS/starship_install.sh" -s -- --yes
+
 
 rm -rf "$TMP_INSTALLERS"
 # Use a COPR Example:
-#
+dnf copr enable atim/starship
+dnf install starship
+
 # dnf5 -y copr enable ublue-os/staging
 # dnf5 -y install package
 # Disable COPRs so they don't end up enabled on the final image:
