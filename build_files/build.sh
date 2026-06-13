@@ -10,8 +10,13 @@ set -ouex pipefail
 # https://mirrors.rpmfusion.org/mirrorlist?path=free/fedora/updates/43/x86_64/repoview/index.html&protocol=https&redirect=1
 
 # this installs a package from fedora repos
-dnf5 install -y tmux 
+dnf5 install -y ripgrep fd-find tldr eza bat zoxide git-delta
 
+echo "=== Downloading and installing starship ==="
+curl -sSfL -o "$TMP_INSTALLERS/starship_install.sh" https://starship.rs/install.sh
+sh "$TMP_INSTALLERS/starship_install.sh" -s -- --yes
+
+rm -rf "$TMP_INSTALLERS"
 # Use a COPR Example:
 #
 # dnf5 -y copr enable ublue-os/staging
