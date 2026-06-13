@@ -3,15 +3,17 @@
 set -ouex pipefail
 
 ### 1. Install download prerequisites
-# (Required temporarily to download and extract the upstream firmware snapshot)
 dnf5 install -y tar wget
 
 ### 2. Fetch bleeding-edge upstream linux-firmware
 echo "Downloading latest upstream linux-firmware snapshot..."
-wget -q https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/snapshot/linux-firmware-main.tar.gz
-
 mkdir -p /tmp/linux-firmware-extract
-tar -xzf linux-firmware-main.tar.gz -C /tmp/linux-firmware-extract --strip-components=1
+
+# Explicitly saving to /tmp to utilize the writable tmpfs mount point
+wget --no-verbose -O /tmp/linux-firmware-main.tar.gz https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/snapshot/linux-firmware-main.tar.gz
+
+echo "Extracting firmware archive..."
+tar -xzf /tmp/linux-firmware-main.tar.gz -C /tmp/linux-firmware-extract --strip-components=1
 
 ### 3. Sync targeted firmware into the image paths
 echo "Syncing updated Intel Wi-Fi & Bluetooth firmware blobs..."
@@ -25,14 +27,8 @@ cp -rf /tmp/linux-firmware-extract/intel/* /usr/lib/firmware/intel/
 
 ### 4. Cleanup build artifacts
 echo "Cleaning up build workspace..."
-rm -rf linux-firmware-main.tar.gz /tmp/linux-firmware-extract
+rm -rf /tmp/linux-firmware-main.tar.gz /tmp/linux-firmware-extract
 dnf5 remove -y tar wget
-
-### 5. Install user packages (Optional)
-# Packages can be installed from any enabled yum repo on the image.
-# RPMfusion repos are available by default in ublue main images.
-# Example:
-# dnf5 install -y ripgrep 
 
 #### Example for enabling a System Unit File
 systemctl enable podman.socket
